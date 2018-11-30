@@ -9,7 +9,6 @@ import hashlib
 import boto3
 
 
-DEFAULT_BUCKET_HASH_SALT = os.getenv('BUCKET_HASH_SALT', 'kdk212')
 DEFAULT_REGION = os.getenv('DEFAULT_REGION', 'ap-northeast-1')
 DEFAULT_STAGE = 'prod'
 AWS_PROFILE = os.getenv('AWS_PROFILE', None)
@@ -136,39 +135,6 @@ def collect_project_envars(project_prefix='ZAPPAPROJ_', project_aws_prefix='ZAPP
     return envars, aws_envars
 
 
-def get_vpc_privatesubnets_and_sgid(stackname, region):
-    """
-    Query AWS to obtain the related VPC private subnet ids and Security Group ID
-    for granting a lambda function access to the VPC
-
-    :returns: (PRIVATE_SUBNET_IDS, SECURITYGROUP_ID)
-    """
-    cloudformation = boto3.client('cloudformation', region_name=region)
-    response = cloudformation.describe_stacks(StackName=stackname)
-    # get created 'Private' subnetIds A & B
-    assert len(response['Stacks']) == 1
-    stack_info = response['Stacks'][0]
-    private_subnet_ids = None
-    for output_info in stack_info['Outputs']:
-        if output_info['OutputKey'] == 'SubnetsPrivate':
-            private_subnet_ids = output_info['OutputValue'].split(',')
-            break
-    # get securitygroup groupId
-    # WHERE Name takes the format:
-    # For details see of what is created in the stack refer to the {project repository}/infrastructure/aws/cloudformation/*.yaml
-    # "GroupName": "{STACKNAME}-LambdaExecSecurityGroup-{RANDOM_COMPONENT}"
-    startswith_string = '{}-LambdaExecSecurityGroup'.format(stackname)
-
-    ec2 = boto3.client('ec2', region_name=region)
-    response = ec2.describe_security_groups()
-    securitygroup_group_id = None
-    for sg_info in response['SecurityGroups']:
-        if sg_info['GroupName'].startswith(startswith_string):
-            securitygroup_group_id = sg_info['GroupId']
-            break
-    return private_subnet_ids, securitygroup_group_id
-
-
 def generate_zappa_settings(stackname: str, additional_envars: dict=None, additional_aws_envars: dict=None, stage: str='prod', region: str=DEFAULT_REGION, **zappa_parameters) -> dict:
 
     required_parameters = (
@@ -180,7 +146,10 @@ def generate_zappa_settings(stackname: str, additional_envars: dict=None, additi
     project_name = zappa_parameters['project_name']
     profile_name = zappa_parameters['profile_name']
 
-    project_bucket_name = _generate_project_bucket_name(project_name, stackname)
+    if 's3_bucket' not in zappa_parameters:
+        project_bucket_name = _generate_project_bucket_name(project_name, stackname)
+    else:
+        project_bucket_name = zappa_parameters['s3_bucket']
     zappa_settings = {
         stage: {
             'aws_region': region,
@@ -222,12 +191,6 @@ def generate_zappa_settings(stackname: str, additional_envars: dict=None, additi
             "SecurityGroupIds": VPC_CONFIG_SECURITYGROUPIDS
         }
 
-    elif stackname and region:
-        private_subnet_ids, securitygroup_group_id = get_vpc_privatesubnets_and_sgid(stackname, region)
-        zappa_settings[stage]['vpc_config'] = {
-            "SubnetIds": private_subnet_ids,
-            "SecurityGroupIds": [securitygroup_group_id]
-        }
     return zappa_settings
 
 
@@ -242,7 +205,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--stack-name',
                         dest='stackname',
                         required=True,
-                        help='aws cloudformation *stack-name* used to prepare the deployment enviornment')
+                        help='aws cloudformation *stack-name* used to prepare the deployment environment')
     parser.add_argument('-r', '--region',
                         default=DEFAULT_REGION,
                         help=f'AWS Region to deploy project to [DEFAULT={DEFAULT_REGION}]')
