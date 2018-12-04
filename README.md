@@ -82,11 +82,11 @@ Where:
 Example:
 ```
 # Zappa Project Required ENVIRONMENT VARIABLES
-ZAPPAPROJ_AWS_ACCESS_KEY_ID={AWS_ACCESS_KEY_ID for AnnotationTool Project S3 Bucket Access}
-ZAPPAPROJ_AWS_SECRET_ACCESS_KEY={AWS_SECRET_ACCESS_KEY for AnnotationTool Project S3 Bucket Access}
-ZAPPAPROJ_DB_USER={AnnotationTool Database User}
-ZAPPAPROJ_DB_NAME={AnnotationTool Database Name}
-ZAPPAPROJ_DB_PASSWORD={AnnotationToll Database Password}
+ZAPPAPROJ_AWS_ACCESS_KEY_ID={AWS_ACCESS_KEY_ID for internal boto3 usage}
+ZAPPAPROJ_AWS_SECRET_ACCESS_KEY={AWS_SECRET_ACCESS_KEY for internal boto3 usage}
+ZAPPAPROJ_DB_USER={Database User}
+ZAPPAPROJ_DB_NAME={Database Name}
+ZAPPAPROJ_DB_PASSWORD={Database Password}
 ZAPPAPROJ_APPLICATION_HOST={Host address where backend application runs}
 ```
 
