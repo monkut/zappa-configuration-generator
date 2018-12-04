@@ -1,4 +1,4 @@
-# zappa-configuratoin-generator
+# zappa-configuration-generator
 
 This is a package that automatically generates the `zappa_settings.json` from options or ENVIRONMENT VARIABLES.
 
