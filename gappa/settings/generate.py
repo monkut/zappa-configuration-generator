@@ -35,6 +35,7 @@ except ImportError:
 
 
 VALID_ZAPPA_STAGE_SETTINGS = (
+ 'app_function',
  'api_key_required',
  'api_key',
  'apigateway_enabled',
