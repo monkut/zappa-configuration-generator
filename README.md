@@ -50,6 +50,8 @@ VPC_CONFIG_SUBNETIDS
 SENTRY_DSN={https://*key*:*pass*@sentry.io/*project*}
 ```
 
+
+
 #### VPC Required Environment Variables
 
 The following variables are required when using zappa/lambda with a VPC (for RDS or Elasticache access):
@@ -90,3 +92,20 @@ ZAPPAPROJ_DB_PASSWORD={Database Password}
 ZAPPAPROJ_APPLICATION_HOST={Host address where backend application runs}
 ```
 
+### Events
+
+zappa supports various AWS events.
+In gappa events are handled by defining them using `zappa` format in a separate file.
+
+Example:
+```
+[{
+"function": "your_module.process_upload_function",
+"event_source": {
+      "arn":  "arn:aws:s3:::my-bucket",
+      "events": [
+        "s3:ObjectCreated:*" // Supported event types: http://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#supported-notification-event-types
+      ]
+   }
+}]
+```

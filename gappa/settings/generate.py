@@ -6,6 +6,8 @@ with the prefix removed.
 """
 import os
 import hashlib
+from pathlib import Path
+
 import boto3
 
 
@@ -136,7 +138,7 @@ def collect_project_envars(project_prefix='ZAPPAPROJ_', project_aws_prefix='ZAPP
     return envars, aws_envars
 
 
-def generate_zappa_settings(stackname: str, additional_envars: dict=None, additional_aws_envars: dict=None, stage: str='prod', region: str=DEFAULT_REGION, **zappa_parameters) -> dict:
+def generate_zappa_settings(stackname: str, additional_envars: dict=None, additional_aws_envars: dict=None, stage: str='prod', region: str=DEFAULT_REGION, events: Path=None, **zappa_parameters) -> dict:
 
     required_parameters = (
         'project_name',
@@ -192,11 +194,25 @@ def generate_zappa_settings(stackname: str, additional_envars: dict=None, additi
             "SecurityGroupIds": VPC_CONFIG_SECURITYGROUPIDS
         }
 
+    # define events
+    if events:
+        assert events.exists()
+        with events.open('r', encoding='utf8') as events_in:
+            loaded_events = json.loads(events_in.read())
+            zappa_settings[stage]['events'] = loaded_events
+
     return zappa_settings
 
 
 def parse_parameters(value):
     return [i.strip() for i in value.split('=')]
+
+
+def filepath(value):
+    p = Path(value).absolute()
+    if not p.exists():
+        raise Exception(f'Given file path does not exist: {value}')
+    return p
 
 
 if __name__ == '__main__':
@@ -210,6 +226,10 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--region',
                         default=DEFAULT_REGION,
                         help=f'AWS Region to deploy project to [DEFAULT={DEFAULT_REGION}]')
+    parser.add_argument('-e', '--events',
+                        default=None,
+                        type=filepath,
+                        help='Specify file path to the JSON file describing events to schedule in zappa')
     parser.add_argument('--stage',
                         default=DEFAULT_STAGE,
                         help=f'Stage to generate settings for [DEFAULT={DEFAULT_STAGE}]')
@@ -234,5 +254,6 @@ if __name__ == '__main__':
                                        additional_aws_envars=project_additional_aws_envars,
                                        stage=args.stage,
                                        region=args.region,
+                                       events=args.events,
                                        **parsed_parameters)
     print(json.dumps(settings, indent=4))
