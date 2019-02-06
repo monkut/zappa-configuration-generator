@@ -76,8 +76,8 @@ ENVIRONMENT VARIABLES with the prefix, `ZAPPAPROJ_` or `ZAPPAPROJAWS_`, will be 
 
 Where:
 
-- `ZAPPAPROJAWS_` prefixed envars will populate the `zappa_settings[stage]['environment_variables']` zappa_settings.json fields.
-- `ZAPPAPROJ_` prefixed envars will populate the `zappa_settings[stage]['aws_environment_variables']` zappa_settings.json fields.
+- `ZAPPAPROJ_` prefixed envars will populate the `zappa_settings[stage]['environment_variables']` zappa_settings.json fields.
+- `ZAPPAPROJAWS_` prefixed envars will populate the `zappa_settings[stage]['aws_environment_variables']` zappa_settings.json fields.
 
 Example:
 ```
