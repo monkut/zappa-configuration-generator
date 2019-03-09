@@ -20,8 +20,8 @@ python3.6 -m gappa.settings.generate --stack-name {STACK NAME} --stage {STAGE NA
 
 ### zappa-sentry support
 
-[zappa-sentry](https://github.com/jneves/zappa-sentry) integration is supported by supplying 'ZAPPAPROJ_SENTRY_DSN' as environment variables.
-When the '' environment variable is provided, the following will be added to the resulting zappa settings:
+[zappa-sentry](https://github.com/jneves/zappa-sentry) integration is supported by supplying 'ZAPPAPROJ_SENTRY_DSN' as an environment variable.
+When the 'ZAPPAPROJ_SENTRY_DSN' environment variable is provided, the following will be added to the resulting zappa settings:
 
 ```
 {
