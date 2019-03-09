@@ -120,12 +120,19 @@ VALID_ZAPPA_STAGE_SETTINGS = (
 def _generate_project_bucket_name(project_name: str, salt: str):
     project_name = project_name.replace(' ', '_').replace('-', '_')
 
-    # generate a hashcomponent to make the bucket globably unique for s3
+    # generate a hash component to make the bucket globably unique for s3
     hash_component = hashlib.sha1(salt.encode('utf8')).hexdigest()[:8]
     return f'zappa-{project_name}-{hash_component}'
 
 
-def collect_project_envars(project_prefix='ZAPPAPROJ_', project_aws_prefix='ZAPPAPROJAWS_'):
+def collect_project_envars(project_prefix: str = 'ZAPPAPROJ_', project_aws_prefix: str = 'ZAPPAPROJAWS_') -> Tuple[dict, dict]:
+    """
+    Collect ALL configuration reslated environment variables.
+    For all collected variables, the prefix is removed and the resulting key/value stored in the appropriate container.
+
+    'project_prefix' -> envars
+    'project_aws_prefix' -> aws_envars
+    """
     envars = {}
     aws_envars = {}
     for key in os.environ:
@@ -138,8 +145,17 @@ def collect_project_envars(project_prefix='ZAPPAPROJ_', project_aws_prefix='ZAPP
     return envars, aws_envars
 
 
-def generate_zappa_settings(stackname: str, additional_envars: dict=None, additional_aws_envars: dict=None, stage: str='prod', region: str=DEFAULT_REGION, events: Path=None, **zappa_parameters) -> dict:
-
+def generate_zappa_settings(stackname: str, additional_envars: dict = None, additional_aws_envars: dict = None, stage: str = 'prod', region: str = DEFAULT_REGION, events: Path = None, **zappa_parameters) -> dict:
+    """
+    Generate the zappa_settings dictionary from given variables
+    :param stackname: Stack name of zappa project stack
+    :param additional_envars: mapping of envar key/values
+    :param additional_aws_envars: mappiing of aws envar key/values
+    :param stage: zappa stage definition
+    :param region: aws region
+    :param events: zappa events definition
+    :param zappa_parameters:
+    """
     required_parameters = (
         'project_name',
     )

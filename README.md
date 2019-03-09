@@ -18,6 +18,26 @@ pip install boto3 git+https://github.com/monkut/zappa-configuration-generator
 python3.6 -m gappa.settings.generate --stack-name {STACK NAME} --stage {STAGE NAME} --zappa-parameters project_name={PROJECT NAME} s3_bucket={S3 BUCKET NAME} > ./zappa_settings.json
 ```
 
+### zappa-sentry support
+
+[zappa-sentry](https://github.com/jneves/zappa-sentry) integration is supported by supplying 'ZAPPAPROJ_SENTRY_DSN' as environment variables.
+When the '' environment variable is provided, the following will be added to the resulting zappa settings:
+
+```
+{
+    "{STAGE}": {
+        ...
+        "environment_variables": {
+            "SENTRY_DSN": "https://*key*:*pass*@sentry.io/*project*",
+            ...
+        },
+        "exception_handler": "zappa_sentry.unhandled_exceptions",
+        ...
+    },
+    ...
+}
+```
+
 ### Create deployment bot user
 
 > TODO
