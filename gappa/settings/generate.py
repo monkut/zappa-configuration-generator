@@ -7,9 +7,7 @@ with the prefix removed.
 import os
 import hashlib
 from pathlib import Path
-
-import boto3
-
+from typing import Tuple
 
 DEFAULT_REGION = os.getenv('DEFAULT_REGION', 'ap-northeast-1')
 DEFAULT_STAGE = 'prod'
