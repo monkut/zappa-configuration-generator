@@ -113,6 +113,13 @@ VALID_ZAPPA_STAGE_SETTINGS = (
  'vpc_config',
  'xray_tracing'
 )
+ZAPPA_STAGE_SETTINGS_INT_TYPES = (
+    'async_response_table_write_capacity',
+    'async_response_table_read_capacity',
+    'cache_cluster_ttl',
+    'memory_size',
+    'timeout_seconds',
+)
 
 
 def _generate_project_bucket_name(project_name: str, salt: str):
@@ -195,6 +202,8 @@ def generate_zappa_settings(stackname: str, additional_envars: dict = None, addi
     for name, value in zappa_parameters.items():
         if name not in VALID_ZAPPA_STAGE_SETTINGS:
             raise ValueError(f'({name}) is not a valid ZAPPA STAGE parameter!')
+        if name in ZAPPA_STAGE_SETTINGS_INT_TYPES:
+            value = int(value)
         zappa_settings[stage][name] = value
 
     # add sentry exceptions handler if zappa_sentry is installed and the appropriate envar is provided
