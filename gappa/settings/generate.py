@@ -173,8 +173,8 @@ def generate_zappa_settings(stackname: str, additional_envars: dict = None, addi
             'project_name': project_name,
             'profile_name': profile_name,  # AWS (local) PROFILE
             "runtime": "python3.6",
-            "memory_size": 2048,
-            "timeout_seconds": 300,
+            "memory_size": int(zappa_parameters.get('memory_size', '2048')),
+            "timeout_seconds": int(zappa_parameters.get('timeout_seconds', '300')),
             "s3_bucket": project_bucket_name,
         }
     }

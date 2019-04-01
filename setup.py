@@ -25,6 +25,7 @@ def get_package_dependencies_from_pipfile():
         deps.append(required_package)
     return deps
 
+
 setup(
     name='gappa',
     version=gappa.__version__,
