@@ -9,8 +9,9 @@ import hashlib
 from pathlib import Path
 from typing import Tuple
 
-DEFAULT_REGION = os.getenv('DEFAULT_REGION', 'ap-northeast-1')
 DEFAULT_STAGE = 'prod'
+DEFAULT_REGION = os.getenv('DEFAULT_REGION', 'ap-northeast-1')
+DEFAULT_RUNTIME = 'python3.6'
 AWS_PROFILE = os.getenv('AWS_PROFILE', None)
 
 LAMBDA_EXECUTION_ROLENAME = os.getenv('LAMBDA_EXECUTION_ROLENAME', None)
@@ -150,7 +151,7 @@ def collect_project_envars(project_prefix: str = 'ZAPPAPROJ_', project_aws_prefi
     return envars, aws_envars
 
 
-def generate_zappa_settings(stackname: str, additional_envars: dict = None, additional_aws_envars: dict = None, stage: str = 'prod', region: str = DEFAULT_REGION, events: Path = None, **zappa_parameters) -> dict:
+def generate_zappa_settings(stackname: str, additional_envars: dict = None, additional_aws_envars: dict = None, stage: str = 'prod', region: str = DEFAULT_REGION, runtime: str = "python3.6", events: Path = None, **zappa_parameters) -> dict:
     """
     Generate the zappa_settings dictionary from given variables
     :param stackname: Stack name of zappa project stack
@@ -179,7 +180,7 @@ def generate_zappa_settings(stackname: str, additional_envars: dict = None, addi
             'aws_region': region,
             'project_name': project_name,
             'profile_name': profile_name,  # AWS (local) PROFILE
-            "runtime": "python3.6",
+            "runtime": runtime,
             "memory_size": int(zappa_parameters.get('memory_size', '2048')),
             "timeout_seconds": int(zappa_parameters.get('timeout_seconds', '300')),
             "s3_bucket": project_bucket_name,
@@ -246,9 +247,6 @@ if __name__ == '__main__':
                         dest='stackname',
                         required=True,
                         help='aws cloudformation *stack-name* used to prepare the deployment environment')
-    parser.add_argument('-r', '--region',
-                        default=DEFAULT_REGION,
-                        help=f'AWS Region to deploy project to [DEFAULT={DEFAULT_REGION}]')
     parser.add_argument('-e', '--events',
                         default=None,
                         type=filepath,
@@ -256,6 +254,12 @@ if __name__ == '__main__':
     parser.add_argument('--stage',
                         default=DEFAULT_STAGE,
                         help=f'Stage to generate settings for [DEFAULT={DEFAULT_STAGE}]')
+    parser.add_argument('-r', '--region',
+                        default=DEFAULT_REGION,
+                        help=f'AWS Region to deploy project to [DEFAULT={DEFAULT_REGION}]')
+    parser.add_argument('-t', '--runtime',
+                        default=DEFAULT_RUNTIME,
+                        help=f'Lambda runtime to use (python2.7|python3.6|python3.7)')
     parser.add_argument('-z', '--zappa-parameters',
                         dest='zappa_parameters',
                         nargs='+',
@@ -277,6 +281,7 @@ if __name__ == '__main__':
                                        additional_aws_envars=project_additional_aws_envars,
                                        stage=args.stage,
                                        region=args.region,
+                                       runtime=args.runtime,
                                        events=args.events,
                                        **parsed_parameters)
     print(json.dumps(settings, indent=4))
