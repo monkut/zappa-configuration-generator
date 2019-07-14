@@ -15,7 +15,7 @@ pip install boto3 git+https://github.com/monkut/zappa-configuration-generator
 # Execution package script to autogenerate 
 # -- Assumes you have previously created or run `zappa init` and `zappa deploy` to create buckets and Execution Role
 # -- {STACK NAME} = Stack name created on initial `zappa deploy` 
-python3.6 -m gappa.settings.generate --stack-name {STACK NAME} --stage {STAGE NAME} --zappa-parameters project_name={PROJECT NAME} s3_bucket={S3 BUCKET NAME} > ./zappa_settings.json
+python3.6 -m gappa.settings.generate --stack-name {STACK NAME} --stage {STAGE NAME} --runtime (python3.6|python3.7)--zappa-parameters project_name={PROJECT NAME} s3_bucket={S3 BUCKET NAME} > ./zappa_settings.json
 ```
 
 ### zappa-sentry support
