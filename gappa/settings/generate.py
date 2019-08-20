@@ -7,11 +7,15 @@ with the prefix removed.
 import os
 import hashlib
 from pathlib import Path
-from typing import Tuple
+from distutils.util import strtobool
+from typing import Tuple, Optional, Union
 
+DEFAULT_PROFILE_NAME = 'default'
 DEFAULT_STAGE = 'prod'
 DEFAULT_REGION = os.getenv('DEFAULT_REGION', 'ap-northeast-1')
 DEFAULT_RUNTIME = 'python3.6'
+DEFAULT_MEMORY_SIZE = '2048'
+DEFAULT_TIMEOUT_SECONDS = '300'  # 5 minutes
 AWS_PROFILE = os.getenv('AWS_PROFILE', None)
 
 LAMBDA_EXECUTION_ROLENAME = os.getenv('LAMBDA_EXECUTION_ROLENAME', None)
@@ -29,90 +33,91 @@ if VPC_CONFIG_SECURITYGROUPIDS:
 USE_ZAPPA_SENTRY = os.getenv('USE_ZAPPA_SENTRY', False)
 
 try:
-    import zappa_sentry
+    import zappa_sentry  # noqa
     ZAPPA_SENTRY_INSTALLED = True
 except ImportError:
     ZAPPA_SENTRY_INSTALLED = False
 
 
 VALID_ZAPPA_STAGE_SETTINGS = (
- 'app_function',
- 'api_key_required',
- 'api_key',
- 'apigateway_enabled',
- 'apigateway_description',
- 'assume_policy',
- 'attach_policy',
- 'async_source',
- 'async_resources',
- 'async_response_table',
- 'async_response_table_read_capacity',
- 'async_response_table_write_capacity',
- 'aws_endpoint_urls',
- 'aws_environment_variables',
- 'aws_kms_key_arn',
- 'aws_region',
- 'binary_support',
- 'callbacks',
- 'cache_cluster_enabled',
- 'cache_cluster_size',
- 'cache_cluster_ttl',
- 'cache_cluster_encrypted',
- 'certificate',
- 'certificate_key',
- 'certificate_chain',
- 'certificate_arn',
- 'cloudwatch_log_level',
- 'cloudwatch_data_trace',
- 'cloudwatch_metrics_enabled',
- 'cognito',
- 'context_header_mappings',
- 'cors',
- 'dead_letter_arn',
- 'debug',
- 'delete_local_zip',
- 'delete_s3_zip',
- 'django_settings',
- 'domain',
- 'base_path',
- 'environment_variables',
- 'events',
- 'exception_handler',
- 'exclude',
- 'extends',
- 'extra_permissions',
- 'iam_authorization',
- 'include',
- 'authorizer',
- 'keep_warm',
- 'keep_warm_expression',
- 'lambda_description',
- 'lambda_handler',
- 'lets_encrypt_key',
- 'log_level',
- 'manage_roles',
- 'memory_size',
- 'num_retained_versions',
- 'payload_compression',
- 'payload_minimum_compression_size',
- 'prebuild_script',
- 'profile_name',
- 'project_name',
- 'remote_env',
- 'role_name',
- 'role_arn',
- 'route53_enabled',
- 'runtime',
- 's3_bucket',
- 'slim_handler',
- 'settings_file',
- 'tags',
- 'timeout_seconds',
- 'touch',
- 'touch_path',
- 'use_precompiled_packages',
- 'vpc_config',
- 'xray_tracing'
+    'app_function',
+    'api_key_required',
+    'api_key',
+    'apigateway_enabled',
+    'apigateway_description',
+    'alb_enabled',
+    'assume_policy',
+    'attach_policy',
+    'async_source',
+    'async_resources',
+    'async_response_table',
+    'async_response_table_read_capacity',
+    'async_response_table_write_capacity',
+    'aws_endpoint_urls',
+    'aws_environment_variables',
+    'aws_kms_key_arn',
+    'aws_region',
+    'binary_support',
+    'callbacks',
+    'cache_cluster_enabled',
+    'cache_cluster_size',
+    'cache_cluster_ttl',
+    'cache_cluster_encrypted',
+    'certificate',
+    'certificate_key',
+    'certificate_chain',
+    'certificate_arn',
+    'cloudwatch_log_level',
+    'cloudwatch_data_trace',
+    'cloudwatch_metrics_enabled',
+    'cognito',
+    'context_header_mappings',
+    'cors',
+    'dead_letter_arn',
+    'debug',
+    'delete_local_zip',
+    'delete_s3_zip',
+    'django_settings',
+    'domain',
+    'base_path',
+    'environment_variables',
+    'events',
+    'exception_handler',
+    'exclude',
+    'extends',
+    'extra_permissions',
+    'iam_authorization',
+    'include',
+    'authorizer',
+    'keep_warm',
+    'keep_warm_expression',
+    'lambda_description',
+    'lambda_handler',
+    'lets_encrypt_key',
+    'log_level',
+    'manage_roles',
+    'memory_size',
+    'num_retained_versions',
+    'payload_compression',
+    'payload_minimum_compression_size',
+    'prebuild_script',
+    'profile_name',
+    'project_name',
+    'remote_env',
+    'role_name',
+    'role_arn',
+    'route53_enabled',
+    'runtime',
+    's3_bucket',
+    'slim_handler',
+    'settings_file',
+    'tags',
+    'timeout_seconds',
+    'touch',
+    'touch_path',
+    'use_precompiled_packages',
+    'vpc_config',
+    'xray_tracing'
 )
 ZAPPA_STAGE_SETTINGS_INT_TYPES = (
     'async_response_table_write_capacity',
@@ -120,6 +125,32 @@ ZAPPA_STAGE_SETTINGS_INT_TYPES = (
     'cache_cluster_ttl',
     'memory_size',
     'timeout_seconds',
+)
+ZAPPA_STAGE_SETTINGS_BOOL_TYPES = (
+    "alb_enabled",
+    "api_key_required",
+    "apigateway_enabled",
+    "async_resources",
+    "binary_support",
+    "cache_cluster_enabled",
+    "cache_cluster_encrypted",
+    "cloudwatch_data_trace",
+    "cloudwatch_metrics_enabled",
+    "debug",
+    "delete_local_zip",
+    "delete_s3_zip",
+    "iam_authorization",
+    "keep_warm",
+    "manage_roles",
+    "payload_compression",
+    "route53_enabled",
+    "slim_handler",
+    "touch",
+    "use_precompiled_packages",
+    "xray_tracing",
+)
+ZAPPA_STAGE_SETTINGS_DUAL_BOOLDICT_TYPES = (
+    "cors",
 )
 
 
@@ -151,7 +182,29 @@ def collect_project_envars(project_prefix: str = 'ZAPPAPROJ_', project_aws_prefi
     return envars, aws_envars
 
 
-def generate_zappa_settings(stackname: str, additional_envars: dict = None, additional_aws_envars: dict = None, stage: str = 'prod', region: str = DEFAULT_REGION, runtime: str = "python3.6", events: Path = None, **zappa_parameters) -> dict:
+def _cast_value_type(name: str, value: str) -> Union[int, bool, dict]:
+    """Convert a zappa_parameter to the appropriate type"""
+    if name not in VALID_ZAPPA_STAGE_SETTINGS:
+        raise ValueError(f'({name}) is not a valid ZAPPA STAGE parameter!')
+    if name in ZAPPA_STAGE_SETTINGS_INT_TYPES:
+        value = int(value)
+    elif name in ZAPPA_STAGE_SETTINGS_DUAL_BOOLDICT_TYPES:
+        if not isinstance(value, dict):
+            value = bool(strtobool(value))
+    elif name in ZAPPA_STAGE_SETTINGS_BOOL_TYPES:
+        value = bool(strtobool(value))
+    return value
+
+
+def generate_zappa_settings(
+        stackname: str,
+        additional_envars: Optional[dict] = None,
+        additional_aws_envars: Optional[dict] = None,
+        stage: str = 'prod',
+        region: str = DEFAULT_REGION,
+        runtime: str = "python3.6",
+        events: Optional[Path] = None,
+        **zappa_parameters) -> dict:
     """
     Generate the zappa_settings dictionary from given variables
     :param stackname: Stack name of zappa project stack
@@ -159,6 +212,7 @@ def generate_zappa_settings(stackname: str, additional_envars: dict = None, addi
     :param additional_aws_envars: mappiing of aws envar key/values
     :param stage: zappa stage definition
     :param region: aws region
+    :param runtime: Lambda python runtime to use
     :param events: zappa events definition
     :param zappa_parameters:
     """
@@ -169,7 +223,7 @@ def generate_zappa_settings(stackname: str, additional_envars: dict = None, addi
         if p not in zappa_parameters:
             raise ValueError(f'Required Parameter ({p}) not given: {zappa_parameters}')
     project_name = zappa_parameters['project_name']
-    profile_name = zappa_parameters['profile_name']
+    profile_name = zappa_parameters.get('profile_name', DEFAULT_PROFILE_NAME)
 
     if 's3_bucket' not in zappa_parameters:
         project_bucket_name = _generate_project_bucket_name(project_name, stackname)
@@ -181,8 +235,8 @@ def generate_zappa_settings(stackname: str, additional_envars: dict = None, addi
             'project_name': project_name,
             'profile_name': profile_name,  # AWS (local) PROFILE
             "runtime": runtime,
-            "memory_size": int(zappa_parameters.get('memory_size', '2048')),
-            "timeout_seconds": int(zappa_parameters.get('timeout_seconds', '300')),
+            "memory_size": int(zappa_parameters.get('memory_size', DEFAULT_MEMORY_SIZE)),
+            "timeout_seconds": int(zappa_parameters.get('timeout_seconds', DEFAULT_TIMEOUT_SECONDS)),
             "s3_bucket": project_bucket_name,
         }
     }
@@ -199,12 +253,9 @@ def generate_zappa_settings(stackname: str, additional_envars: dict = None, addi
         zappa_settings[stage]['aws_environment_variables'] = additional_aws_envars
 
     # add parameters
-    # -- Note if a
+    # -- Convert to appropriate type if needed
     for name, value in zappa_parameters.items():
-        if name not in VALID_ZAPPA_STAGE_SETTINGS:
-            raise ValueError(f'({name}) is not a valid ZAPPA STAGE parameter!')
-        if name in ZAPPA_STAGE_SETTINGS_INT_TYPES:
-            value = int(value)
+        value = _cast_value_type(name, value)
         zappa_settings[stage][name] = value
 
     # add sentry exceptions handler if zappa_sentry is installed and the appropriate envar is provided
@@ -228,11 +279,13 @@ def generate_zappa_settings(stackname: str, additional_envars: dict = None, addi
     return zappa_settings
 
 
-def parse_parameters(value):
+def parse_parameters(value: str) -> list:
+    """Parse command-line name=value pairs into a list"""
     return [i.strip() for i in value.split('=')]
 
 
-def filepath(value):
+def filepath(value: str) -> Path:
+    """Convert given value to a Path object"""
     p = Path(value).absolute()
     if not p.exists():
         raise Exception(f'Given file path does not exist: {value}')
