@@ -205,6 +205,7 @@ def generate_zappa_settings(
         runtime: str = "python3.6",
         use_exclude_defaults: bool = True,
         events: Optional[Path] = None,
+        use_slimhandler: bool = False,
         **zappa_parameters) -> dict:
     """
     Generate the zappa_settings dictionary from given variables
@@ -216,6 +217,7 @@ def generate_zappa_settings(
     :param runtime: Lambda python runtime to use
     :param use_exclude_defaults: Ignore DEFAULT excludes patterns
     :param events: zappa events definition
+    :param use_slimhandler: include 'slim_handler = true' in resulting zappa_settings.json
     :param zappa_parameters:
     """
     required_parameters = (
@@ -281,6 +283,9 @@ def generate_zappa_settings(
             loaded_events = json.loads(events_in.read())
             zappa_settings[stage]['events'] = loaded_events
 
+    if use_slimhandler:
+        zappa_settings[stage]["slim_handler"] = True
+
     return zappa_settings
 
 
@@ -323,6 +328,11 @@ if __name__ == '__main__':
                         action="store_true",
                         default=False,
                         help="Ignore DEFAULT excludes patterns")
+    parser.add_argument('--use-slimhandler',
+                        dest="use_slimhandler",
+                        action="store_true",
+                        default=False,
+                        help="use slimhandler in package")
     parser.add_argument('-z', '--zappa-parameters',
                         dest='zappa_parameters',
                         nargs='+',
@@ -348,5 +358,6 @@ if __name__ == '__main__':
                                        runtime=args.runtime,
                                        use_exclude_defaults=use_exclude_defaults,
                                        events=args.events,
+                                       use_slimhandler=args.use_slimhandler,
                                        **parsed_parameters)
     print(json.dumps(settings, indent=4))
