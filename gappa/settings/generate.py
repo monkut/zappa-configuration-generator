@@ -257,7 +257,7 @@ def generate_zappa_settings(
         zappa_settings[stage]['aws_environment_variables'] = additional_aws_envars
 
     if use_exclude_defaults:
-        zappa_settings[stage]['exclude'] = ["test_*", ".circleci", ".pytest_cache", ".pylintrc", ".gitignore", ".isort.cfg", ".pre-commit-config.yaml"]
+        zappa_settings[stage]['exclude'] = ["*.gz", "*.rar", "test_*", ".circleci", ".pytest_cache", ".pylintrc", ".gitignore", ".isort.cfg", ".pre-commit-config.yaml"]
 
     # add parameters
     # -- Convert to appropriate type if needed
