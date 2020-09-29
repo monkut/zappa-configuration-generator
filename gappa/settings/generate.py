@@ -203,6 +203,7 @@ def generate_zappa_settings(
         stage: str = 'prod',
         region: str = DEFAULT_REGION,
         runtime: str = "python3.6",
+        use_exclude_defaults: bool = True,
         events: Optional[Path] = None,
         **zappa_parameters) -> dict:
     """
@@ -213,6 +214,7 @@ def generate_zappa_settings(
     :param stage: zappa stage definition
     :param region: aws region
     :param runtime: Lambda python runtime to use
+    :param use_exclude_defaults: Ignore DEFAULT excludes patterns
     :param events: zappa events definition
     :param zappa_parameters:
     """
@@ -251,6 +253,9 @@ def generate_zappa_settings(
     # add aws envars
     if additional_aws_envars:
         zappa_settings[stage]['aws_environment_variables'] = additional_aws_envars
+
+    if use_exclude_defaults:
+        zappa_settings[stage]['exclude'] = ["test_*", ".circleci", ".pytest_cache", ".pylintrc", ".gitignore", ".isort.cfg", ".pre-commit-config.yaml"]
 
     # add parameters
     # -- Convert to appropriate type if needed
@@ -313,6 +318,11 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--runtime',
                         default=DEFAULT_RUNTIME,
                         help=f'Lambda runtime to use (python2.7|python3.6|python3.7)')
+    parser.add_argument('--ignore-default-excludes',
+                        dest="ignore_default_excludes",
+                        action="store_true",
+                        default=False,
+                        help="Ignore DEFAULT excludes patterns")
     parser.add_argument('-z', '--zappa-parameters',
                         dest='zappa_parameters',
                         nargs='+',
@@ -329,12 +339,14 @@ if __name__ == '__main__':
     if AWS_PROFILE:
         parsed_parameters['profile_name'] = AWS_PROFILE
 
+    use_exclude_defaults = not args.ignore_default_excludes
     settings = generate_zappa_settings(args.stackname,
                                        additional_envars=project_additional_envars,
                                        additional_aws_envars=project_additional_aws_envars,
                                        stage=args.stage,
                                        region=args.region,
                                        runtime=args.runtime,
+                                       use_exclude_defaults=use_exclude_defaults,
                                        events=args.events,
                                        **parsed_parameters)
     print(json.dumps(settings, indent=4))
