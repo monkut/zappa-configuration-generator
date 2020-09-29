@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-zappa = ">=0.48.2,<0.49.0"
+zappa = ">=0.48.2,<0.52.0"
 
 [dev-packages]
 pytest = "*"
