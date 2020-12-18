@@ -322,7 +322,7 @@ if __name__ == '__main__':
                         help=f'AWS Region to deploy project to [DEFAULT={DEFAULT_REGION}]')
     parser.add_argument('-t', '--runtime',
                         default=DEFAULT_RUNTIME,
-                        help=f'Lambda runtime to use (python2.7|python3.6|python3.7)')
+                        help=f'Lambda runtime to use (python3.6|python3.7|python3.8)')
     parser.add_argument('--ignore-default-excludes',
                         dest="ignore_default_excludes",
                         action="store_true",
