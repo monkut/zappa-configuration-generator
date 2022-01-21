@@ -345,7 +345,7 @@ if __name__ == '__main__':
     parsed_parameters = {}
     if args.zappa_parameters:
         try:
-            parsed_parameters = dict(args.zappa_parameters)
+            parsed_parameters = dict([parameter for parameter in args.zappa_parameters if len(parameter) == 2])
         except ValueError as e:
             print(args.zappa_parameters)
             raise
