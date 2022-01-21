@@ -344,7 +344,11 @@ if __name__ == '__main__':
 
     parsed_parameters = {}
     if args.zappa_parameters:
-        parsed_parameters = dict(args.zappa_parameters)
+        try:
+            parsed_parameters = dict(args.zappa_parameters)
+        except ValueError as e:
+            print(args.zappa_parameters)
+            raise
 
     if AWS_PROFILE:
         parsed_parameters['profile_name'] = AWS_PROFILE
