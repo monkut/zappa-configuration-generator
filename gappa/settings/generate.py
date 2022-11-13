@@ -242,6 +242,7 @@ def generate_zappa_settings(
             "memory_size": int(zappa_parameters.get('memory_size', DEFAULT_MEMORY_SIZE)),
             "timeout_seconds": int(zappa_parameters.get('timeout_seconds', DEFAULT_TIMEOUT_SECONDS)),
             "s3_bucket": project_bucket_name,
+            "additional_text_mimetypes": ["application/vnd.oai.openapi", ]
         }
     }
     if LAMBDA_EXECUTION_ROLENAME:
