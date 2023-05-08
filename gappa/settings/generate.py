@@ -13,7 +13,7 @@ from typing import Tuple, Optional, Union
 DEFAULT_PROFILE_NAME = 'default'
 DEFAULT_STAGE = 'prod'
 DEFAULT_REGION = os.getenv('DEFAULT_REGION', 'ap-northeast-1')
-DEFAULT_RUNTIME = 'python3.6'
+DEFAULT_RUNTIME = 'python3.7'
 DEFAULT_MEMORY_SIZE = '2048'
 DEFAULT_TIMEOUT_SECONDS = '300'  # 5 minutes
 AWS_PROFILE = os.getenv('AWS_PROFILE', None)
@@ -202,7 +202,7 @@ def generate_zappa_settings(
         additional_aws_envars: Optional[dict] = None,
         stage: str = 'prod',
         region: str = DEFAULT_REGION,
-        runtime: str = "python3.6",
+        runtime: str = DEFAULT_RUNTIME,
         use_exclude_defaults: bool = True,
         events: Optional[Path] = None,
         use_slimhandler: bool = False,
