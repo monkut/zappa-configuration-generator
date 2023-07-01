@@ -258,7 +258,19 @@ def generate_zappa_settings(
         zappa_settings[stage]['aws_environment_variables'] = additional_aws_envars
 
     if use_exclude_defaults:
-        zappa_settings[stage]['exclude'] = ["*.gz", "*.rar", "test_*", ".circleci", ".pytest_cache", ".pylintrc", ".gitignore", ".isort.cfg", ".pre-commit-config.yaml", "fixtures", "tests"]
+        zappa_settings[stage]['exclude'] = [
+            "*.gz",
+            "*.rar",
+            "test_*",
+            ".circleci",
+            ".pytest_cache",
+            ".pylintrc",
+            ".gitignore",
+            ".isort.cfg",
+            ".pre-commit-config.yaml",
+            "fixtures",
+            "tests"
+        ]
 
     # add parameters
     # -- Convert to appropriate type if needed
@@ -323,7 +335,7 @@ if __name__ == '__main__':
                         help=f'AWS Region to deploy project to [DEFAULT={DEFAULT_REGION}]')
     parser.add_argument('-t', '--runtime',
                         default=DEFAULT_RUNTIME,
-                        help=f'Lambda runtime to use (python3.6|python3.7|python3.8)')
+                        help='Lambda runtime to use (python3.7|python3.8|python3.9|python3.10)')
     parser.add_argument('--ignore-default-excludes',
                         dest="ignore_default_excludes",
                         action="store_true",
@@ -347,7 +359,7 @@ if __name__ == '__main__':
     if args.zappa_parameters:
         try:
             parsed_parameters = dict([parameter for parameter in args.zappa_parameters if len(parameter) == 2])
-        except ValueError as e:
+        except ValueError:
             print(args.zappa_parameters)
             raise
 
