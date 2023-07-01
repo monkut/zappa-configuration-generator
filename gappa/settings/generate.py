@@ -267,7 +267,6 @@ def generate_zappa_settings(
             ".gitignore",
             ".isort.cfg",
             ".pre-commit-config.yaml",
-            "fixtures",
             "tests"
         ]
 
