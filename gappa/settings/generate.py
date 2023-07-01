@@ -164,7 +164,7 @@ def _generate_project_bucket_name(project_name: str, salt: str):
 
 def collect_project_envars(project_prefix: str = 'ZAPPAPROJ_', project_aws_prefix: str = 'ZAPPAPROJAWS_') -> Tuple[dict, dict]:
     """
-    Collect ALL configuration reslated environment variables.
+    Collect ALL configuration related environment variables.
     For all collected variables, the prefix is removed and the resulting key/value stored in the appropriate container.
 
     'project_prefix' -> envars
@@ -259,7 +259,6 @@ def generate_zappa_settings(
 
     if use_exclude_defaults:
         zappa_settings[stage]['exclude'] = [
-            "*.gz",
             "*.rar",
             "test_*",
             ".circleci",
