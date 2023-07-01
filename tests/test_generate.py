@@ -24,7 +24,7 @@ def test_generate_generate_zappa_settings__defaults():
     assert result
     assert len(result) == 1
     assert default_stage in result
-    assert result[default_stage]['runtime'] == 'python3.6'
+    assert result[default_stage]['runtime'] == 'python3.7'
 
 
 def test_generate_generate_zappa_settings__bool_hanlding():

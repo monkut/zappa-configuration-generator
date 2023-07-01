@@ -13,7 +13,7 @@ from typing import Tuple, Optional, Union
 DEFAULT_PROFILE_NAME = 'default'
 DEFAULT_STAGE = 'prod'
 DEFAULT_REGION = os.getenv('DEFAULT_REGION', 'ap-northeast-1')
-DEFAULT_RUNTIME = 'python3.6'
+DEFAULT_RUNTIME = 'python3.7'
 DEFAULT_MEMORY_SIZE = '2048'
 DEFAULT_TIMEOUT_SECONDS = '300'  # 5 minutes
 AWS_PROFILE = os.getenv('AWS_PROFILE', None)
@@ -202,7 +202,7 @@ def generate_zappa_settings(
         additional_aws_envars: Optional[dict] = None,
         stage: str = 'prod',
         region: str = DEFAULT_REGION,
-        runtime: str = "python3.6",
+        runtime: str = DEFAULT_RUNTIME,
         use_exclude_defaults: bool = True,
         events: Optional[Path] = None,
         use_slimhandler: bool = False,
@@ -258,7 +258,19 @@ def generate_zappa_settings(
         zappa_settings[stage]['aws_environment_variables'] = additional_aws_envars
 
     if use_exclude_defaults:
-        zappa_settings[stage]['exclude'] = ["*.gz", "*.rar", "test_*", ".circleci", ".pytest_cache", ".pylintrc", ".gitignore", ".isort.cfg", ".pre-commit-config.yaml"]
+        zappa_settings[stage]['exclude'] = [
+            "*.gz",
+            "*.rar",
+            "test_*",
+            ".circleci",
+            ".pytest_cache",
+            ".pylintrc",
+            ".gitignore",
+            ".isort.cfg",
+            ".pre-commit-config.yaml",
+            "fixtures",
+            "tests"
+        ]
 
     # add parameters
     # -- Convert to appropriate type if needed
@@ -323,7 +335,7 @@ if __name__ == '__main__':
                         help=f'AWS Region to deploy project to [DEFAULT={DEFAULT_REGION}]')
     parser.add_argument('-t', '--runtime',
                         default=DEFAULT_RUNTIME,
-                        help=f'Lambda runtime to use (python3.6|python3.7|python3.8)')
+                        help='Lambda runtime to use (python3.7|python3.8|python3.9|python3.10)')
     parser.add_argument('--ignore-default-excludes',
                         dest="ignore_default_excludes",
                         action="store_true",
@@ -347,7 +359,7 @@ if __name__ == '__main__':
     if args.zappa_parameters:
         try:
             parsed_parameters = dict([parameter for parameter in args.zappa_parameters if len(parameter) == 2])
-        except ValueError as e:
+        except ValueError:
             print(args.zappa_parameters)
             raise
 
