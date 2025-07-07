@@ -7,13 +7,12 @@ with the prefix removed.
 import os
 import hashlib
 from pathlib import Path
-from distutils.util import strtobool
 from typing import Tuple, Optional, Union
 
 DEFAULT_PROFILE_NAME = 'default'
 DEFAULT_STAGE = 'prod'
 DEFAULT_REGION = os.getenv('DEFAULT_REGION', 'ap-northeast-1')
-DEFAULT_RUNTIME = 'python3.12'
+DEFAULT_RUNTIME = 'python3.13'
 DEFAULT_MEMORY_SIZE = '2048'
 DEFAULT_TIMEOUT_SECONDS = '300'  # 5 minutes
 AWS_PROFILE = os.getenv('AWS_PROFILE', None)
@@ -152,6 +151,17 @@ ZAPPA_STAGE_SETTINGS_BOOL_TYPES = (
 ZAPPA_STAGE_SETTINGS_DUAL_BOOLDICT_TYPES = (
     "cors",
 )
+
+
+def strtobool(val: str | int | bool) -> bool:
+    """stringをboolに変換"""
+    if isinstance(val, bool):
+        return val
+    if isinstance(val, str):
+        return val.lower() in ["true", "1", "t", "y", "yes"]
+    if isinstance(val, int):
+        return val == 1
+    return bool(val)
 
 
 def _generate_project_bucket_name(project_name: str, salt: str):
@@ -333,7 +343,7 @@ if __name__ == '__main__':
                         help=f'AWS Region to deploy project to [DEFAULT={DEFAULT_REGION}]')
     parser.add_argument('-t', '--runtime',
                         default=DEFAULT_RUNTIME,
-                        help='Lambda runtime to use (python3.8|python3.9|python3.10|python3.11|python3.12)')
+                        help='Lambda runtime to use (python3.8|python3.9|python3.10|python3.11|python3.12|python3.13) [DEFAULT=python3.13]')
     parser.add_argument('--ignore-default-excludes',
                         dest="ignore_default_excludes",
                         action="store_true",
