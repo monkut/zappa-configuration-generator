@@ -1,6 +1,6 @@
 import pytest
 
-from gappa.settings.generate import generate_zappa_settings
+from gappa.settings.generate import generate_zappa_settings, DEFAULT_RUNTIME
 
 
 def test_generate_geneate_zappa_settings__required_parameters():
@@ -24,7 +24,7 @@ def test_generate_generate_zappa_settings__defaults():
     assert result
     assert len(result) == 1
     assert default_stage in result
-    assert result[default_stage]['runtime'] == 'python3.7'
+    assert result[default_stage]['runtime'] == DEFAULT_RUNTIME
 
 
 def test_generate_generate_zappa_settings__bool_hanlding():

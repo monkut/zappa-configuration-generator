@@ -13,7 +13,7 @@ from typing import Tuple, Optional, Union
 DEFAULT_PROFILE_NAME = 'default'
 DEFAULT_STAGE = 'prod'
 DEFAULT_REGION = os.getenv('DEFAULT_REGION', 'ap-northeast-1')
-DEFAULT_RUNTIME = 'python3.7'
+DEFAULT_RUNTIME = 'python3.12'
 DEFAULT_MEMORY_SIZE = '2048'
 DEFAULT_TIMEOUT_SECONDS = '300'  # 5 minutes
 AWS_PROFILE = os.getenv('AWS_PROFILE', None)
@@ -333,7 +333,7 @@ if __name__ == '__main__':
                         help=f'AWS Region to deploy project to [DEFAULT={DEFAULT_REGION}]')
     parser.add_argument('-t', '--runtime',
                         default=DEFAULT_RUNTIME,
-                        help='Lambda runtime to use (python3.7|python3.8|python3.9|python3.10)')
+                        help='Lambda runtime to use (python3.8|python3.9|python3.10|python3.11|python3.12)')
     parser.add_argument('--ignore-default-excludes',
                         dest="ignore_default_excludes",
                         action="store_true",
