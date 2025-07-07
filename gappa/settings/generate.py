@@ -153,12 +153,12 @@ ZAPPA_STAGE_SETTINGS_DUAL_BOOLDICT_TYPES = (
 )
 
 
-def strtobool(val: str | int | bool) -> bool:
+def strtobool(val: Union[str, int, bool]) -> bool:
     """stringをboolに変換"""
     if isinstance(val, bool):
         return val
     if isinstance(val, str):
-        return val.lower() in ["true", "1", "t", "y", "yes"]
+        return val.lower() in {"true", "1", "t", "y", "yes"}
     if isinstance(val, int):
         return val == 1
     return bool(val)
